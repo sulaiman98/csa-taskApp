@@ -1,4 +1,4 @@
-# cs Academy Task App Backend Guide
+# CS Academy Task App Backend Guide
 This API was build using python-Flask
 
 ## Backend Setup
