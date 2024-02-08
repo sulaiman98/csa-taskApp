@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import axios from 'axios';
 import React, { useState } from 'react';
-import { URL } from './constants';
+import { URL } from '../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignInScreen = function ({ navigation }) {
@@ -13,8 +13,6 @@ const SignInScreen = function ({ navigation }) {
     })
 
     const handleSignIn = () => {
-        // Perform sign-in logic here
-
         // validate input
         if (!data.email || !data.password) {
             Alert.alert(
@@ -35,16 +33,24 @@ const SignInScreen = function ({ navigation }) {
             console.log('Response!', response.data)
 
             // Get Acess, Refresh Token, id
-            const { access_token, refresh_token, id, firstname } = response.data;
+            const { access_token, refresh_token, id, firstname, lastname, username } = response.data;
 
             // Save the tokens to AsyncStorage for future requests
             AsyncStorage.setItem('accessToken', access_token);
             AsyncStorage.setItem('refreshToken', refresh_token);
             AsyncStorage.setItem('UserId', String(id));
-            AsyncStorage.setItem('userName', firstname);
+            AsyncStorage.setItem('firstname', firstname);
+            AsyncStorage.setItem('lastName', lastname);
+            AsyncStorage.setItem('userName', username);
 
-            // Navigate to the authenticated
-            navigation.navigate('MainTabs')
+            // Navigate to the Home Screen
+            // navigation.navigate('MainTabs')
+
+            // This prevent route back to the login screen when login
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'MainTabs' }],
+            });
 
         }).catch((err) => {
             // Handle login failure
@@ -57,61 +63,61 @@ const SignInScreen = function ({ navigation }) {
     };
 
     return (
-        // <KeyboardAvoidingView behavior='padding'
-        //     keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 70}
-        //     style={styles.container}
-        // >
+
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <SafeAreaView
-                SafeAreaView showsVerticalScrollIndicator={false}
-                style={{ ...styles.container, paddingHorizontal: 35, }} // paddingTop: 130,
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
-                <Text style={styles.signInText}>Sign In</Text>
+                <SafeAreaView
+                    style={styles.container}
+                >
+                    <Text style={styles.signInText}>Sign In</Text>
 
-                <View style={styles.form}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        value={data.email}
-                        onChangeText={(val) => setData({ ...data, email: val })}
+                    <View style={styles.form}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            placeholderTextColor={'#eee'}
+                            value={data.email}
+                            onChangeText={(val) => setData({ ...data, email: val })}
+                            autoCapitalize="none" // Ensure email is not auto-capitalized
+                            keyboardType="email-address" // Set keyboard type to email address for better user experience
+                        />
 
-                        autoCapitalize="none" // Ensure email is not auto-capitalized
-                        keyboardType="email-address" // Set keyboard type to email address for better user experience
-                    />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Password"
+                            placeholderTextColor={'#eee'}
+                            value={data.password}
+                            onChangeText={(val) => setData({ ...data, password: val })}
+                            secureTextEntry={true} // Set to true to hide text content
+                        />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        value={data.password}
-                        onChangeText={(val) => setData({ ...data, password: val })}
+                        <TouchableOpacity
+                            style={styles.addButton}
+                            onPress={handleSignIn}
+                        >
+                            <Text style={styles.buttonText}>Sign In</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                    // secureTextEntry={true} // Set to true to hide text content
-                    />
+                    <View style={styles.option}>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('SignUp')}
+                        >
+                            <Text style={styles.optionText}>Create Account</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={styles.addButton}
-                        onPress={handleSignIn}
-                    >
-                        <Text style={styles.buttonText}>Sign In</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.option}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('SignUp')}
-                    >
-                        <Text style={styles.optionText}>Create Account</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('UpdatePasword')}
-                    >
-                        <Text style={styles.optionText}>Forget Password?</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        </TouchableWithoutFeedback>
-        // </KeyboardAvoidingView>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('UpdatePasword')}
+                        >
+                            <Text style={styles.optionText}>Forget Password?</Text>
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+            </KeyboardAvoidingView>
+        </TouchableWithoutFeedback >
 
     )
 };
@@ -121,6 +127,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         backgroundColor: '#094FAF', // Background color
+        paddingHorizontal: 35,
         // padding: 10,  // All sides are 10
         // paddingHorizontal: 50,  // Left and right are 20
     },

@@ -3,10 +3,8 @@ import axios from 'axios';
 import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
-import { Picker } from '@react-native-picker/picker';
-import DropDownPicker from 'react-native-dropdown-picker';
 import { RadioButton } from 'react-native-paper';
-import { URL } from './constants';
+import { URL } from '../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -59,6 +57,8 @@ const EditTaskScreen = ({ route, navigation }) => {
                 'Upated', 'Task Updated Successfully',
                 [{ text: 'Okay' }]
             );
+
+            navigation.navigate('HomeStack');
 
         } catch (error) {
             console.log('Error:', error);

@@ -19,7 +19,7 @@ const PasswordUpdateScreen = function ({ navigation }) {
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <SafeAreaView
-                    SafeAreaView showsVerticalScrollIndicator={false}
+                    // SafeAreaView showsVerticalScrollIndicator={false}
                     style={{ paddingTop: 130, paddingHorizontal: 35, }}
                 >
                     <Text style={styles.signInText}>Update Your Password</Text>
@@ -28,15 +28,20 @@ const PasswordUpdateScreen = function ({ navigation }) {
                         <TextInput
                             style={styles.input}
                             placeholder="Email"
+                            placeholderTextColor="#eee"
                             value={email}
                             onChangeText={(text) => setEmail(text)}
+                            autoCapitalize='none'
+                            keyboardType='email-address'
                         />
 
                         <TextInput
                             style={styles.input}
                             placeholder="Password"
+                            placeholderTextColor="#eee"
                             value={password}
                             onChangeText={(text) => setpassword(text)}
+                            secureTextEntry={true}
                         />
 
                         <TouchableOpacity style={styles.addButton}

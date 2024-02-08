@@ -26,9 +26,8 @@ class UserRegister(Resource):
         if user.find_by_email(user.email):
             return {"message": "A user with that email already exists."}, 400
         
-        if user.find_by_phone(user.phone):
-            return {"message": "A user with that phone number already exists."}, 400
-        
+        # if user.find_by_phone(user.phone):
+        #     return {"message": "A user with that phone number already exists."}, 400
         
         user.set_password(user.password)
         user.save_to_db()
@@ -53,6 +52,8 @@ class UserLogin(Resource):
                 "email": user.email,
                 "lastname": user.lastname,
                 "firstname": user.firstname,
+                "username": user.username,
+                "email": user.email,
                 "id": user.id
             }, 200
         
@@ -67,11 +68,11 @@ class UserDetailsResource(Resource):
         if not user:
             return {"message": "user not found"}, 404
         return user_schema.dump(user), 200
+    
 
 class GetSingleUserResource(Resource):
     @classmethod
     def get(cls):
-
         users = Users.query.all()
 
         results = users_schema.dump(users)
@@ -102,5 +103,4 @@ class UserDeleteResource(Resource):
             return {"message": "user not found"}, 404
         user.delete_from_db()
         return {"message": "user deleted successfully"}, 200
-
 

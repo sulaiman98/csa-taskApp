@@ -9,7 +9,7 @@ from app.resources.user import (
     UserDetailsResource,
     GetSingleUserResource,
     UserPasswordUpdateResource, 
-    UserDeleteResource
+    UserDeleteResource,
 )
 
 from app.resources.task import (

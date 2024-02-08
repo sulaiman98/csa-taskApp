@@ -16,9 +16,6 @@ import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 
 
-
-
-
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 const AddTaskStack = createNativeStackNavigator();

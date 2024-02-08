@@ -1,34 +1,83 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = ({ navigation }) => {
-    // Dummy data for profile information
-    const profileData = {
-        firstName: 'John',
-        lastName: 'Doe',
-        username: 'johndoe123',
-        email: 'john.doe@example.com',
-        gender: 'Male',
-        address: '123 Main Street, Cityville',
-        phone: '123-456-7890',
+    const [currentUserData, setCurrentUserData] = useState([]);
+    const [image, setImage] = useState(null);
+
+    const handleLogout = () => {
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'SignIn' }]
+        })
     };
+
+    // Getting Image from Gallery
+    const pickImage = async () => {
+
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.assets[0]?.uri);
+        }
+    };
+
+    useEffect(() => {
+        const getCurrentUser = async () => {
+            try {
+                const firstName = await AsyncStorage.getItem("firstname")
+                const lastName = await AsyncStorage.getItem("lastName")
+                const userName = await AsyncStorage.getItem("userName")
+
+                console.log(firstName, lastName, userName)
+                setCurrentUserData([firstName, lastName, userName])
+
+            } catch (error) {
+                // console.log(error.response)
+            }
+        }
+
+        getCurrentUser();
+
+    }, [])
+
 
     return (
         <View style={styles.container}>
-            <View style={styles.imageBox}>
-                <Image
-                    source={require('../assets/user.png')} // Replace with the path to your image
-                    style={styles.profileImage}
-                    resizeMode="cover"
-                />
-                <Text style={styles.label}>Israel Kollie</Text>
+            <View style={styles.imageBox} >
+                <Pressable onPress={pickImage}>
+                    {image ? (
+                        <Image
+                            source={{ uri: image }}
+                            // style={{ width: 200, height: 200 }}
+                            style={styles.profileImage}
+                        />) : (
+                        <Image
+                            source={require('../assets/user.png')}
+                            style={styles.profileImage}
+                            resizeMode="cover"
+                        />
+                    )}
+                </Pressable>
+
+                <Text style={styles.label}>{`${currentUserData[0]} ${currentUserData[1]}`}</Text>
             </View>
 
             <View style={styles.profileOption}>
                 <TouchableOpacity
                     style={styles.option}
-                    onPress={() => navigation.navigate('EditProfileStack')}
+                    onPress={() => navigation.navigate('EditProfileStack', { userData: currentUserData })}
                 >
                     <AntDesign name="user" size={24} color="black" />
                     <Text style={styles.optionLabel}>Edit Profile</Text>
@@ -36,15 +85,13 @@ const ProfileScreen = ({ navigation }) => {
 
                 <TouchableOpacity
                     style={styles.option}
-                // onPress={() => navigation.navigate('')}
+                    onPress={handleLogout}
                 >
                     <MaterialIcons name="logout" size={24} color="black" />
                     <Text style={styles.optionLabel}>Logout</Text>
                 </TouchableOpacity>
 
             </View>
-
-
         </View>
     );
 };
@@ -93,10 +140,6 @@ const styles = StyleSheet.create({
         // marginTop: 20,
         gap: 15
     },
-
-
-
-
     inputContainer: {
         marginBottom: 25,
     },

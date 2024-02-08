@@ -21,6 +21,7 @@ class Users(db.Model):
     address = db.Column(db.String(250))
     phone = db.Column(db.String(50))
     password = db.Column(db.String(150))
+    profile_uri = db.Column(db.String(255))
     timestamp = db.Column(db.DateTime, default=datetime.now())
 
 

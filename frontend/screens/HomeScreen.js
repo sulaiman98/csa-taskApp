@@ -1,36 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { format } from 'date-fns'; // Library to format Date
 import axios from 'axios';
-import { URL } from './constants';
-
-const task = [
-    // {
-    //     title: 'Ul Development 1',
-    //     status: 'Completed',
-    //     description: 'I will be creating the UI for my CS Academy Project.',
-    //     startDate: '1 Nov 2023',
-    //     endDate: '7 Nov 2023',
-    // },
-    // {
-    //     title: 'Ul Development 2',
-    //     status: 'On-going',
-    //     description: 'I will be creating the UI for my CS Academy Project.',
-    //     startDate: '1 Nov 2023',
-    //     endDate: '7 Nov 2023',
-    // },
-    // {
-    //     title: 'Ul Development 3',
-    //     status: 'On-going',
-    //     description: 'I will be creating the UI for my CS Academy Project.',
-    //     startDate: '1 Nov 2023',
-    //     endDate: '7 Nov 2023',
-    // },
-    // Add more tasks as needed
-];
+import { URL } from '../constants';
 
 // Date Format Function
 const formatDate = (date) => {
@@ -77,14 +52,14 @@ const HomeScreen = ({ navigation }) => {
 
     // Deleting Task Function
     const handDeleteTask = async (taskId) => {
-        console.log(taskId)
-
         try {
+            // setIsLoading(true);
             const response = await axios.delete(`${URL}/delete-task/${taskId}`);
             console.log('Sucess:', response.data)
 
             // Rerender the Task Data
             fetchTaskData();
+            setIsLoading(false)
 
             Alert.alert(
                 'Deleted', 'Task Deleted Successfully',
@@ -102,17 +77,23 @@ const HomeScreen = ({ navigation }) => {
         }
     };
 
-    // Fetch tasks when the component mounts
-    useEffect(() => {
-        fetchTaskData();
+    // // Fetch tasks when the component mounts
+    // useFocusEffect(() => {
+    //     fetchTaskData();
+    // }, []);
 
-    }, []);
+    // Use useFocusEffect hook to fetch task list every time the screen is focused
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchTaskData();
+        }, [])
+    );
 
     const fetchTaskData = async () => {
         try {
             // Retrieve access token from AsyncStorage
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const userName = await AsyncStorage.getItem('userName');
+            const userName = await AsyncStorage.getItem('firstname');
             console.log(accessToken)
 
             // Make a request to get user tasks with the JWT token in the headers
@@ -122,10 +103,9 @@ const HomeScreen = ({ navigation }) => {
                 }
             });
 
-            // console.log(response.data)
             setOptionsVisible(null);
             setCurrentUserName(userName)
-            setTasks(response.data.Tasks);
+            setTasks(response.data.Tasks.reverse());
             setIsLoading(false);
 
         } catch (error) {
@@ -191,7 +171,7 @@ const HomeScreen = ({ navigation }) => {
                                     <Text style={styles.description}>{task.taskdescription}</Text>
 
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={styles.date}> {formatDate(task.startdate)} -  {formatDate(task.enddate)} </Text>
+                                        <Text style={styles.date}> {formatDate(task.startdate)} - {formatDate(task.enddate)} </Text>
 
                                         <TouchableOpacity
                                             style={styles.iconBox}

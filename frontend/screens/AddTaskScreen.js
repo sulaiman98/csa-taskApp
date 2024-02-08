@@ -1,10 +1,10 @@
 // AddTaskScreen.js
 import axios from 'axios';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
 import { RadioButton } from 'react-native-paper';
-import { URL } from './constants';
+import { URL } from '../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -14,7 +14,7 @@ const converDateToBackendFormat = (dataString) => {
     return `${year}-${month}-${day}`;
 }
 
-const AddTaskScreen = () => {
+const AddTaskScreen = ({ navigation }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [startDate, setStartDate] = useState('');
@@ -23,9 +23,6 @@ const AddTaskScreen = () => {
 
 
     const handleCreateTask = async () => {
-
-        // Handle creating the task here
-        console.log('Task created:', { title, description, startDate, endDate, priority });
 
         try {
             // Getting User ID from AsynStorage
@@ -58,69 +55,98 @@ const AddTaskScreen = () => {
                 [{ text: 'Okay' }]
             );
 
+            navigation.navigate('HomeStack')
+
         } catch (error) {
             console.log('Error:', error);
         }
-
     };
 
     return (
-        <ScrollView style={styles.container} ScrollView showsVerticalScrollIndicator={false}>
-            <View style={{ marginBottom: 40 }}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Title"
-                    value={title}
-                    onChangeText={(text) => setTitle(text)}
-                />
-
-                <TextInput
-                    style={{ ...styles.input, height: 80, }}
-                    placeholder="Task Description"
-                    multiline
-                    numberOfLines={4}
-
-                    value={description}
-                    onChangeText={(text) => setDescription(text)}
-
-                />
-
-                <Text style={styles.DateStyle}>Choose Start Date</Text>
-                <DatePicker
-                    mode="calendar"
-                    onSelectedChange={date => setStartDate(date)}
-                />
-
-                <Text style={styles.DateStyle}>Choose End Date</Text>
-                <DatePicker
-                    mode="calendar"
-                    // current="2020-07-13"
-                    selected="2020-07-23"
-                    onSelectedChange={date => setEndDate(date)}
-                />
-
-                <View style={styles.radioGroup}>
-                    <Text>Priority:</Text>
-                    <RadioButton.Group onValueChange={(value) => setPriority(value)} value={priority}>
-                        <View style={styles.radioItem}>
-                            <RadioButton value="None" />
-                            <Text>None</Text>
-                        </View>
-                        <View style={styles.radioItem}>
-                            <RadioButton value="High" />
-                            <Text>High</Text>
-                        </View>
-                    </RadioButton.Group>
-                </View>
-
-                <TouchableOpacity style={styles.addButton}
-                    onPress={() => handleCreateTask()}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <ScrollView
+                    style={styles.container}
+                    showsVerticalScrollIndicator={false}
                 >
-                    <Text style={styles.buttonText}>Create Task</Text>
-                </TouchableOpacity>
+                    <View style={{ paddingBottom: 130 }}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Title"
+                            value={title}
+                            onChangeText={(text) => setTitle(text)}
+                        />
 
-            </View>
-        </ScrollView>
+                        <TextInput
+                            style={{ ...styles.input, height: 80, }}
+                            placeholder="Task Description"
+                            multiline
+                            numberOfLines={4}
+
+                            value={description}
+                            onChangeText={(text) => setDescription(text)}
+
+                        />
+
+                        <Text style={styles.DateStyle}>Choose Start Date</Text>
+                        <DatePicker
+                            mode="calendar"
+                            onSelectedChange={date => setStartDate(date)}
+                        />
+
+                        <Text style={styles.DateStyle}>Choose End Date</Text>
+                        <DatePicker
+                            mode="calendar"
+                            // current="2020-07-13"
+                            selected="2020-07-23"
+                            onSelectedChange={date => setEndDate(date)}
+                        />
+
+
+                        <Text style={styles.DateStyle}>Priority</Text>
+
+                        <RadioButton.Group onValueChange={(value) => setPriority(value)} value={priority}>
+                            <View style={styles.radioGroup}>
+                                <View style={styles.radioItem}>
+                                    <RadioButton value="None" />
+                                    <Text style={styles.radioLabel}>None</Text>
+                                </View>
+
+                                <View style={styles.radioItem}>
+                                    <RadioButton value="High" />
+                                    <Text style={styles.radioLabel}>High</Text>
+                                </View>
+                            </View>
+                        </RadioButton.Group>
+
+                        {/* <View style={styles.radioGroup}>
+                            <Text>Priority:</Text>
+                            <RadioButton.Group onValueChange={(value) => setPriority(value)} value={priority}>
+                                <View style={styles.radioItem}>
+                                    <RadioButton value="None" />
+                                    <Text>None</Text>
+                                </View>
+                                <View style={styles.radioItem}>
+                                    <RadioButton value="High" />
+                                    <Text>High</Text>
+                                </View>
+                            </RadioButton.Group>
+                        </View> */}
+
+                        <TouchableOpacity style={styles.addButton}
+                            onPress={() => handleCreateTask()}
+                        >
+                            <Text style={styles.buttonText}>Create Task</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+
 
     );
 };
@@ -133,7 +159,7 @@ const styles = StyleSheet.create({
         paddingLeft: 35,
         paddingRight: 35,
         textAlign: 'center',
-        paddingTopTop: 50,
+        paddingTop: 50,
     },
     header: {
         fontSize: 24,
@@ -154,18 +180,24 @@ const styles = StyleSheet.create({
     DateStyle: {
         backgroundColor: "#eee",
         borderRadius: 5,
-        marginBottom: 20,
+        // marginBottom: 20,
         padding: 10,
     },
     radioGroup: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 12,
+        marginTop: 20,
     },
     radioItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginRight: 16,
+        marginRight: 50,
+    },
+    radioLabel: {
+        marginLeft: 8,
+        fontSize: 16,
+        color: '#333',
     },
 
     addButton: {

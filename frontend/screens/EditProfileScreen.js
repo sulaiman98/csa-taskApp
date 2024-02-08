@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback } from 'react-native';
 
-const EditProfileScreen = () => {
-    // Dummy data for profile information
+const EditProfileScreen = ({ route }) => {
+    const { userData } = route.params;
 
-    const [firstName, setFirstName] = useState("Israel");
-    const [lastName, setLastName] = useState("Kollie");
-    const [userName, setuserName] = useState("Kollie1234");
-    const [email, setEmail] = useState("Kollie@example.com");
-    const [address, setGender] = useState("Male");
-    const [gender, setAddress] = useState("123 Main Street, Cityville");
-    const [phone, setPhone] = useState("123-456-7890");
+    const [firstName, setFirstName] = useState(`${userData[0]}`);
+    const [lastName, setLastName] = useState(`${userData[1]}`);
+    const [userName, setuserName] = useState(`${userData[2]}`);
+    const [email, setEmail] = useState("");
+    const [address, setGender] = useState("");
+    const [gender, setAddress] = useState("");
+    const [phone, setPhone] = useState("");
 
     const handleEditTask = () => {
         // Handle edit task here
