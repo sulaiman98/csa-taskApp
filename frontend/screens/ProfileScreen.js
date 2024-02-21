@@ -3,6 +3,8 @@ import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Pressable }
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { URL } from '../constants';
 
 const ProfileScreen = ({ navigation }) => {
     const [currentUserData, setCurrentUserData] = useState([]);
@@ -26,11 +28,29 @@ const ProfileScreen = ({ navigation }) => {
             quality: 1,
         });
 
-        console.log(result);
+        // console.log(result);
 
         if (!result.canceled) {
             setImage(result.assets[0]?.uri);
-        }
+            // Send the image URI to the backend
+            uploadProfileImage(result.assets[0]?.uri);
+        };
+    };
+
+    const uploadProfileImage = async (uri) => {
+        try {
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            const response = await axios.post(`${URL}/user-profile`, {
+                image_uri: uri
+            }, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+
+            console.log(response)
+
+        } catch (error) {
+            console.log("Error:", error)
+        };
     };
 
     useEffect(() => {
@@ -39,18 +59,20 @@ const ProfileScreen = ({ navigation }) => {
                 const firstName = await AsyncStorage.getItem("firstname")
                 const lastName = await AsyncStorage.getItem("lastName")
                 const userName = await AsyncStorage.getItem("userName")
+                const userProfile = await AsyncStorage.getItem("userProfile")
 
-                console.log(firstName, lastName, userName)
-                setCurrentUserData([firstName, lastName, userName])
+                // console.log(userProfile);
+                setCurrentUserData([firstName, lastName, userName]);
+
+                if (userProfile !== "null") setImage(userProfile);
 
             } catch (error) {
-                // console.log(error.response)
+                console.log(error.response)
             }
         }
-
         getCurrentUser();
 
-    }, [])
+    }, []);
 
 
     return (

@@ -18,7 +18,6 @@ const SignInScreen = function ({ navigation }) {
             Alert.alert(
                 'Missing field', 'Email and Password are required'
             ), [{ text: 'Okay' }];
-
             return;
         };
 
@@ -33,7 +32,7 @@ const SignInScreen = function ({ navigation }) {
             console.log('Response!', response.data)
 
             // Get Acess, Refresh Token, id
-            const { access_token, refresh_token, id, firstname, lastname, username } = response.data;
+            const { access_token, refresh_token, id, firstname, lastname, username, image_uri } = response.data;
 
             // Save the tokens to AsyncStorage for future requests
             AsyncStorage.setItem('accessToken', access_token);
@@ -42,6 +41,7 @@ const SignInScreen = function ({ navigation }) {
             AsyncStorage.setItem('firstname', firstname);
             AsyncStorage.setItem('lastName', lastname);
             AsyncStorage.setItem('userName', username);
+            AsyncStorage.setItem('userProfile', String(image_uri));
 
             // Navigate to the Home Screen
             // navigation.navigate('MainTabs')

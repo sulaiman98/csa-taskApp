@@ -1,20 +1,49 @@
+import axios from 'axios';
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Image, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
+import { URL } from '../constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EditProfileScreen = ({ route }) => {
     const { userData } = route.params;
 
-    const [firstName, setFirstName] = useState(`${userData[0]}`);
-    const [lastName, setLastName] = useState(`${userData[1]}`);
-    const [userName, setuserName] = useState(`${userData[2]}`);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [userName, setuserName] = useState("");
     const [email, setEmail] = useState("");
-    const [address, setGender] = useState("");
-    const [gender, setAddress] = useState("");
+    const [address, setAddress] = useState("");
+    const [gender, setGender] = useState("");
     const [phone, setPhone] = useState("");
 
-    const handleEditTask = () => {
+    const handleEditTask = async () => {
         // Handle edit task here
         console.log('Task created:', { firstName, lastName, userName, email, address, gender, phone });
+        try {
+            const userId = await AsyncStorage.getItem('UserId');
+            const response = await axios.put(`${URL}/update-user/${userId}`, {
+                firstname: firstName,
+                lastname: lastName,
+                username: userName,
+                email: email,
+                address: address,
+                gender: gender,
+                phone: phone
+            }, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+            console.log("Success:", response)
+
+            Alert.alert(
+                'Upated', 'User Updated Successfully',
+                [{ text: 'Okay' }]
+            );
+
+        } catch (error) {
+            console.log("Error:", error)
+            // if (error.response && error.response.status === 401) {
+            Alert.alert('Error', 'Failed to Update User. Please try again later.');
+            // };
+        };
     };
 
     return (
@@ -99,6 +128,7 @@ const EditProfileScreen = ({ route }) => {
                         >
                             <Text style={styles.buttonText}>Save</Text>
                         </TouchableOpacity>
+
                     </View>
                 </ScrollView>
             </TouchableWithoutFeedback>

@@ -7,9 +7,11 @@ from app.resources.user import (
     UserRegister, 
     UserLogin, 
     UserDetailsResource,
+    UpdateUserDetailsResource,
     GetSingleUserResource,
     UserPasswordUpdateResource, 
     UserDeleteResource,
+    UserProfileUpdate
 )
 
 from app.resources.task import (
@@ -28,8 +30,10 @@ api.add_resource(UserRegister, "/register")
 api.add_resource(UserLogin, "/login")
 api.add_resource(UserDetailsResource, "/user-details/<int:user_id>")
 api.add_resource(GetSingleUserResource, "/all-users")
+api.add_resource(UpdateUserDetailsResource, "/update-user/<int:user_id>")
 api.add_resource(UserPasswordUpdateResource, "/update-password")
 api.add_resource(UserDeleteResource, "/user-delete/<int:user_id>")
+api.add_resource(UserProfileUpdate, "/user-profile")
 
 api.add_resource(CreateTaskResource, "/create-task")
 api.add_resource(GetAllTaskResource, "/all-tasks")

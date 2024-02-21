@@ -16,11 +16,11 @@ const SignUpScreen = ({ navigation }) => {
         comfirmPasword: "",
     });
 
+
     const handleSignUp = () => {
         if (
             !data.firstName ||
             !data.lastName ||
-            !data.userName ||
             !data.email ||
             !data.password
         ) {
@@ -32,6 +32,8 @@ const SignUpScreen = ({ navigation }) => {
             Alert.alert('Password Mismatch', 'Password and Confirm Password did not match');
             return;
         };
+
+
 
         axios.post(`${URL}/register`, {
             firstname: data.firstName,

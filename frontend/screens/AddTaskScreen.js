@@ -21,7 +21,6 @@ const AddTaskScreen = ({ navigation }) => {
     const [endDate, setEndDate] = useState('');
     const [priority, setPriority] = useState('None');
 
-
     const handleCreateTask = async () => {
 
         try {
@@ -104,8 +103,6 @@ const AddTaskScreen = ({ navigation }) => {
                             selected="2020-07-23"
                             onSelectedChange={date => setEndDate(date)}
                         />
-
-
                         <Text style={styles.DateStyle}>Priority</Text>
 
                         <RadioButton.Group onValueChange={(value) => setPriority(value)} value={priority}>
@@ -121,20 +118,6 @@ const AddTaskScreen = ({ navigation }) => {
                                 </View>
                             </View>
                         </RadioButton.Group>
-
-                        {/* <View style={styles.radioGroup}>
-                            <Text>Priority:</Text>
-                            <RadioButton.Group onValueChange={(value) => setPriority(value)} value={priority}>
-                                <View style={styles.radioItem}>
-                                    <RadioButton value="None" />
-                                    <Text>None</Text>
-                                </View>
-                                <View style={styles.radioItem}>
-                                    <RadioButton value="High" />
-                                    <Text>High</Text>
-                                </View>
-                            </RadioButton.Group>
-                        </View> */}
 
                         <TouchableOpacity style={styles.addButton}
                             onPress={() => handleCreateTask()}

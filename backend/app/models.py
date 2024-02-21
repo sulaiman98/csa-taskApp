@@ -19,11 +19,10 @@ class Users(db.Model):
     email = db.Column(db.String(50))
     gender = db.Column(db.String(50))
     address = db.Column(db.String(250))
-    phone = db.Column(db.String(50))
+    phone = db.Column(db.Integer)
     password = db.Column(db.String(150))
     profile_uri = db.Column(db.String(255))
     timestamp = db.Column(db.DateTime, default=datetime.now())
-
 
     def save_to_db(self) -> None:
         db.session.add(self)

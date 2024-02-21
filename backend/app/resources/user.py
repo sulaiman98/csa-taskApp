@@ -12,6 +12,8 @@ from flask_restful import Resource
 from app.models import Users
 from app.schemas.user import UserSchema
 
+from app import db
+
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
@@ -54,11 +56,11 @@ class UserLogin(Resource):
                 "firstname": user.firstname,
                 "username": user.username,
                 "email": user.email,
+                "image_uri": user.profile_uri,
                 "id": user.id
             }, 200
         
         return {"message": "Invalid credentials"}, 401
-    
 
 class UserDetailsResource(Resource):
     @classmethod
@@ -69,6 +71,25 @@ class UserDetailsResource(Resource):
             return {"message": "user not found"}, 404
         return user_schema.dump(user), 200
     
+class UpdateUserDetailsResource(Resource):
+    @classmethod
+    def put(cls, user_id: int):
+        data = user_schema.load(request.get_json())
+        user = Users.find_by_id(user_id)
+
+        if user:
+            user.firstname = data.firstname
+            user.lastname = data.lastname
+            user.username = data.username
+            user.email = data.email
+            user.gender = data.gender
+            user.phone = data.phone
+            user.address = data.address
+            user.save_to_db()
+        else: 
+            return {"message": "User not found"}
+        return user_schema.dump(user), 200    
+    
 
 class GetSingleUserResource(Resource):
     @classmethod
@@ -78,7 +99,6 @@ class GetSingleUserResource(Resource):
         results = users_schema.dump(users)
         return {'users': results}, 200
 
-    
 class UserPasswordUpdateResource(Resource):
     @classmethod
     def put(cls):
@@ -92,7 +112,6 @@ class UserPasswordUpdateResource(Resource):
         else:
             return {"message": "user not found"}, 404
         return user_schema.dump(user), 200
-    
 
 class UserDeleteResource(Resource):
     @classmethod
@@ -103,4 +122,24 @@ class UserDeleteResource(Resource):
             return {"message": "user not found"}, 404
         user.delete_from_db()
         return {"message": "user deleted successfully"}, 200
+    
 
+class UserProfileUpdate(Resource):
+    @classmethod
+    @jwt_required()
+    def post(cls):
+        data = request.get_json()
+        user_id = get_jwt_identity()
+
+        image_uri = data['image_uri']
+        user = Users.find_by_id(user_id)
+
+        if user:
+            user.profile_uri = image_uri
+            db.session.commit()
+
+            print(user)
+            return user_schema.dump(user)
+            # return {'message': 'Image uploaded successfully'}, 200
+
+        return {'message': 'User not found'}, 404

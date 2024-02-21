@@ -78,7 +78,7 @@ const HomeScreen = ({ navigation }) => {
     };
 
     // // Fetch tasks when the component mounts
-    // useFocusEffect(() => {
+    // useEffect(() => {
     //     fetchTaskData();
     // }, []);
 
@@ -89,6 +89,7 @@ const HomeScreen = ({ navigation }) => {
         }, [])
     );
 
+
     const fetchTaskData = async () => {
         try {
             // Retrieve access token from AsyncStorage
@@ -97,7 +98,7 @@ const HomeScreen = ({ navigation }) => {
             console.log(accessToken)
 
             // Make a request to get user tasks with the JWT token in the headers
-            const response = await axios.get(`${URL}/user-tasks`, {
+            const response = await axios.get(`${URL}/user-tasks/`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
